@@ -38,6 +38,8 @@ export function CRUD() {
       .includes(searchInputValue.trim().toLocaleLowerCase());
   });
 
+  const selectedUser = filteredUsers[selectedIndex];
+
   const searchId = useId();
   const nameId = useId();
   const surnameId = useId();
@@ -50,10 +52,9 @@ export function CRUD() {
   }
 
   function handleUpdate() {
-    const idToUpdate = filteredUsers[selectedIndex]?.id;
     setUsers((prev) => {
       return prev.map((user) => {
-        return user.id === idToUpdate
+        return user.id === selectedUser?.id
           ? { name: nameInputValue, surname: surnameInputValue, id: user.id }
           : user;
       });
@@ -61,9 +62,8 @@ export function CRUD() {
   }
 
   function handleDelete() {
-    const idToDelete = filteredUsers[selectedIndex]?.id;
     setUsers((prev) => {
-      return prev.filter((user) => user.id !== idToDelete);
+      return prev.filter((user) => user.id !== selectedUser?.id);
     });
   }
 

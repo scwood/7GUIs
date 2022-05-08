@@ -10,7 +10,7 @@ enum FlightType {
 
 function getTodayDateString() {
   const [dateString] = new Date().toISOString().split("T");
-  return dateString;
+  return dateString || "";
 }
 
 export function FlightBooker() {
