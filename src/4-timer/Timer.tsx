@@ -4,12 +4,12 @@ import styles from "./Timer.module.css";
 
 export function Timer() {
   const [duration, setDuration] = useState(10000);
-  const [start, setStart] = useState(new Date());
+  const [startDate, setStartDate] = useState(new Date());
   const [now, setNow] = useState(new Date());
 
   const progress = Math.min(
-    ((now.getTime() - start.getTime()) / duration) * 100,
-    100
+    100,
+    ((now.getTime() - startDate.getTime()) / duration) * 100
   );
 
   useEffect(() => {
@@ -17,14 +17,13 @@ export function Timer() {
   }, []);
 
   function reset() {
-    const now = new Date();
-    setStart(now);
-    setNow(now);
+    setStartDate(new Date());
+    setNow(new Date());
   }
 
   return (
     <>
-      <h2>Timer</h2>
+      <h2>4. Timer</h2>
       <div className={styles.container}>
         <label>Elapsed time</label>
         <ProgressBar progress={progress} />
@@ -40,7 +39,13 @@ export function Timer() {
         <button onClick={reset}>Reset</button>
       </div>
       <p>
-        <a href="https://github.com/scwood/7guis">Source code</a>
+        <a
+          href="https://github.com/scwood/7GUIs/blob/main/src/4-timer/Timer.tsx"
+          target="_blank"
+          rel="noreferrer"
+        >
+          Source code
+        </a>
       </p>
     </>
   );

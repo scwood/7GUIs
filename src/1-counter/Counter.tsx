@@ -7,11 +7,17 @@ export function Counter() {
 
   return (
     <>
-      <h2>Counter</h2>
+      <h2>1. Counter</h2>
       <input type="text" className={styles.input} value={count} disabled />
       <button onClick={() => setCount((prev) => prev + 1)}>Count</button>
       <p>
-        <a href="https://github.com/scwood/7guis">Source code</a>
+        <a
+          href="https://github.com/scwood/7GUIs/blob/main/src/1-counter/Counter.tsx"
+          target="_blank"
+          rel="noreferrer"
+        >
+          Source code
+        </a>
       </p>
     </>
   );

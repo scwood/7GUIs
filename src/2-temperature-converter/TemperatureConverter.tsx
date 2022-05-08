@@ -2,11 +2,6 @@ import { ChangeEventHandler, useState } from "react";
 
 import styles from "./TemperatureConverter.module.css";
 
-enum TemperatureUnit {
-  Celsius,
-  Fahrenheit,
-}
-
 function toFahrenheit(temperatureInCelsius: number): number {
   return temperatureInCelsius * (9 / 5) + 32;
 }
@@ -16,48 +11,50 @@ function toCelsius(temperatureInFahrenheit: number): number {
 }
 
 export function TemperatureConverter() {
-  const [celsius, setCelsius] = useState<string>("");
-  const [fahrenheit, setFahrenheit] = useState<string>("");
+  const [celsius, setCelsius] = useState("");
+  const [fahrenheit, setFahrenheit] = useState("");
 
-  function createTemperatureChangeHandler(
-    unit: TemperatureUnit
-  ): ChangeEventHandler<HTMLInputElement> {
-    return (event) => {
-      const value = event.target.value;
-      const number = parseInt(value);
-      if (unit === TemperatureUnit.Celsius) {
-        setCelsius(value);
-        if (!isNaN(number)) {
-          setFahrenheit(String(toFahrenheit(number)));
-        }
-      } else {
-        setFahrenheit(value);
-        if (!isNaN(number)) {
-          setCelsius(String(toCelsius(number)));
-        }
-      }
-    };
-  }
+  const handleCelsiusChange: ChangeEventHandler<HTMLInputElement> = (event) => {
+    const valueString = event.target.value;
+    const valueNumber = parseInt(valueString);
+    setCelsius(valueString);
+    if (!isNaN(valueNumber)) {
+      setFahrenheit(String(toFahrenheit(valueNumber)));
+    }
+  };
+
+  const handleFahrenheitChange: ChangeEventHandler<HTMLInputElement> = (
+    event
+  ) => {
+    const valueString = event.target.value;
+    const valueNumber = parseInt(valueString);
+    setFahrenheit(valueString);
+    if (!isNaN(valueNumber)) {
+      setCelsius(String(toCelsius(valueNumber)));
+    }
+  };
 
   return (
     <>
-      <h2>Temperature converter</h2>
+      <h2>2. Temperature converter</h2>
       <div className={styles.form}>
-        <input
-          type="text"
-          value={celsius}
-          onChange={createTemperatureChangeHandler(TemperatureUnit.Celsius)}
-        />
+        <input type="text" value={celsius} onChange={handleCelsiusChange} />
         <span>Celsius = </span>
         <input
           type="text"
           value={fahrenheit}
-          onChange={createTemperatureChangeHandler(TemperatureUnit.Fahrenheit)}
+          onChange={handleFahrenheitChange}
         />
         <span>Fahrenheit</span>
       </div>
       <p>
-        <a href="https://github.com/scwood/7guis">Source code</a>
+        <a
+          href="https://github.com/scwood/7GUIs/blob/main/src/2-temperature-converter/TemperatureConverter.tsx"
+          target="_blank"
+          rel="noreferrer"
+        >
+          Source code
+        </a>
       </p>
     </>
   );

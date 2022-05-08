@@ -41,7 +41,7 @@ export function FlightBooker() {
 
   return (
     <>
-      <h2>Flight booker</h2>
+      <h2>3. Flight booker</h2>
       <div className={styles.form}>
         <select
           onChange={(event) => setFlightType(event.target.value as FlightType)}
@@ -72,7 +72,13 @@ export function FlightBooker() {
         </button>
       </div>
       <p>
-        <a href="https://github.com/scwood/7guis">Source code</a>
+        <a
+          href="https://github.com/scwood/7GUIs/blob/main/src/3-flight-booker/FlightBooker.tsx"
+          target="_blank"
+          rel="noreferrer"
+        >
+          Source code
+        </a>
       </p>
     </>
   );
