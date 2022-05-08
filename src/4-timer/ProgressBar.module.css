@@ -1,0 +1,15 @@
+.border {
+  height: 16px;
+}
+
+.outer {
+  border: 1px solid gainsboro;
+  width: 100%;
+  padding: 1px;
+  background-color: whitesmoke;
+}
+
+.inner {
+  background-color: limegreen;
+  height: 16px;
+}

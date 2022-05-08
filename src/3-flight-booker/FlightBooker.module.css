@@ -1,0 +1,14 @@
+.form {
+  width: 130px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.form > input {
+  width: 100%;
+}
+
+.invalid {
+  background-color: lightpink;
+}
