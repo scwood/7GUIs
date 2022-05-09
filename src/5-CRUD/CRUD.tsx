@@ -2,18 +2,16 @@ import { useState, useId } from "react";
 
 import styles from "./CRUD.module.css";
 
+let nextId = 0;
+
 interface User {
-  id: string;
+  id: number;
   name: string;
   surname: string;
 }
 
-let autoIncrementId = 0;
-
 function createUser(name: string, surname: string): User {
-  const id = String(autoIncrementId);
-  autoIncrementId++;
-  return { id, name, surname };
+  return { id: nextId++, name, surname };
 }
 
 function getFullName(user: User) {
@@ -128,7 +126,7 @@ export function CRUD() {
       </div>
       <p>
         <a
-          href="https://github.com/scwood/7guis"
+          href="https://github.com/scwood/7GUIs/blob/main/src/5-CRUD/CRUD.tsx"
           target="_blank"
           rel="noreferrer"
         >

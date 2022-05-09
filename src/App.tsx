@@ -4,6 +4,7 @@ import { TemperatureConverter } from "./2-temperature-converter/TemperatureConve
 import { FlightBooker } from "./3-flight-booker/FlightBooker";
 import { Timer } from "./4-timer/Timer";
 import { CRUD } from "./5-CRUD/CRUD";
+import { CircleDrawer } from "./6-circle-drawer/CircleDrawer";
 
 export function App() {
   return (
@@ -38,6 +39,7 @@ export function App() {
       <FlightBooker />
       <Timer />
       <CRUD />
+      <CircleDrawer />
     </div>
   );
 }
