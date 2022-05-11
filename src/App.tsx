@@ -11,20 +11,8 @@ export function App() {
     <div className={styles.container}>
       <h1>7GUIs</h1>
       <p>
-        A{" "}
-        <a
-          href="https://www.typescriptlang.org/"
-          target="_blank"
-          rel="noreferrer"
-        >
-          Typescript
-        </a>
-        /
-        <a href="https://reactjs.org/" target="_blank" rel="noreferrer">
-          React
-        </a>{" "}
-        implementation of 7GUIs. 7GUIs is a series of GUI programming challenges
-        created by Eugen Kiss. Read more about it{" "}
+        A Typescript/React implementation of 7GUIs. 7GUIs is a series of GUI
+        programming challenges created by Eugen Kiss. Read more about it{" "}
         <a
           href="https://eugenkiss.github.io/7guis"
           target="_blank"

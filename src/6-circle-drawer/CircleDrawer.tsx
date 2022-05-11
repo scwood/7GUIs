@@ -1,6 +1,7 @@
 import { MouseEventHandler, useReducer } from "react";
 
 import styles from "./CircleDrawer.module.css";
+import { ResizeModal } from "./ResizeModal";
 
 let nextId = 0;
 
@@ -11,34 +12,51 @@ interface Circle {
   diameter: number;
 }
 
-interface State {
+interface CircleDrawerState {
   circles: Circle[];
+  selectedCircle: Circle | null;
   undoStates: Circle[][];
   redoStates: Circle[][];
 }
 
-const initialState: State = { circles: [], undoStates: [], redoStates: [] };
+const initialCircleDrawerState: CircleDrawerState = {
+  circles: [],
+  selectedCircle: null,
+  undoStates: [],
+  redoStates: [],
+};
 
-type Action =
+type CircleDrawerActions =
   | { type: "addCircle"; circle: Circle }
-  | { type: "resizeCircle"; circleId: number; diameter: number }
+  | { type: "selectCircle"; circle: Circle | null }
+  | { type: "resizeCircle"; circle: Circle; diameter: number }
   | { type: "undo" }
   | { type: "redo" };
 
-function reducer(state: State, action: Action): State {
+function reducer(
+  state: CircleDrawerState,
+  action: CircleDrawerActions
+): CircleDrawerState {
   switch (action.type) {
     case "addCircle":
       return {
+        ...state,
         undoStates: [...state.undoStates, state.circles],
         redoStates: [],
         circles: [...state.circles, action.circle],
       };
+    case "selectCircle":
+      return {
+        ...state,
+        selectedCircle: action.circle,
+      };
     case "resizeCircle":
       return {
+        ...state,
         undoStates: [...state.undoStates, state.circles],
         redoStates: [],
         circles: state.circles.map((circle) => {
-          return circle.id === action.circleId
+          return circle.id === action.circle.id
             ? { ...circle, diameter: action.diameter }
             : circle;
         }),
@@ -50,6 +68,7 @@ function reducer(state: State, action: Action): State {
         const undoStates = [...state.undoStates];
         const circles = undoStates.pop() || [];
         return {
+          ...state,
           undoStates,
           redoStates: [state.circles, ...state.redoStates],
           circles,
@@ -62,6 +81,7 @@ function reducer(state: State, action: Action): State {
         const redoStates = [...state.redoStates];
         const circles = redoStates.shift() || [];
         return {
+          ...state,
           undoStates: [...state.undoStates, state.circles],
           redoStates,
           circles,
@@ -71,22 +91,36 @@ function reducer(state: State, action: Action): State {
 }
 
 export function CircleDrawer() {
-  const [state, dispatch] = useReducer(reducer, initialState);
+  const [state, dispatch] = useReducer(reducer, initialCircleDrawerState);
 
   const handleDrawingAreaClick: MouseEventHandler<HTMLDivElement> = (event) => {
+    if (state.selectedCircle) {
+      dismissModal();
+      return;
+    }
     const rect = event.currentTarget.getBoundingClientRect();
     const circle: Circle = {
       id: nextId++,
       x: event.clientX - rect.x,
       y: event.clientY - rect.y,
-      diameter: 50,
+      diameter: 30,
     };
     dispatch({ type: "addCircle", circle });
   };
 
-  const handleCircleClick: MouseEventHandler<HTMLDivElement> = (event) => {
-    event.stopPropagation();
-  };
+  const handleCircleClick =
+    (circle: Circle): MouseEventHandler<HTMLDivElement> =>
+    (event) => {
+      event.stopPropagation();
+      dispatch({
+        type: "selectCircle",
+        circle: state.selectedCircle?.id === circle.id ? null : circle,
+      });
+    };
+
+  function dismissModal() {
+    dispatch({ type: "selectCircle", circle: null });
+  }
 
   function undo() {
     dispatch({ type: "undo" });
@@ -96,32 +130,59 @@ export function CircleDrawer() {
     dispatch({ type: "redo" });
   }
 
+  function handleResize(diameter: number) {
+    if (state.selectedCircle) {
+      dispatch({
+        type: "resizeCircle",
+        diameter,
+        circle: state.selectedCircle,
+      });
+    }
+  }
+
   return (
     <>
       <h2>6. Circle drawer</h2>
-      <button onClick={undo} disabled={state.undoStates.length === 0}>
-        Undo
-      </button>
-      <button onClick={redo} disabled={state.redoStates.length === 0}>
-        Redo
-      </button>
-      <div className={styles.container} onClick={handleDrawingAreaClick}>
-        {state.circles.map((circle, i) => {
-          return (
-            <div
-              key={i}
-              className={styles.circle}
-              style={{
-                width: circle.diameter,
-                height: circle.diameter,
-                left: circle.x,
-                top: circle.y,
-              }}
-              onClick={handleCircleClick}
-            />
-          );
-        })}
+      <div className={styles.buttonBar}>
+        <button onClick={undo} disabled={state.undoStates.length === 0}>
+          Undo
+        </button>
+        <button onClick={redo} disabled={state.redoStates.length === 0}>
+          Redo
+        </button>
       </div>
+      <div className={styles.container} onClick={handleDrawingAreaClick}>
+        <div className={styles.circles}>
+          {state.circles.map((circle, i) => {
+            return (
+              <div
+                key={i}
+                className={styles.circle}
+                style={{
+                  width: circle.diameter,
+                  height: circle.diameter,
+                  left: circle.x,
+                  top: circle.y,
+                }}
+                onClick={handleCircleClick(circle)}
+              />
+            );
+          })}
+        </div>
+        {state.selectedCircle ? (
+          <ResizeModal
+            currentDiameter={state.selectedCircle.diameter}
+            onChangeDiameter={handleResize}
+            style={{
+              position: "absolute",
+              overflow: "overlay",
+              top: state.selectedCircle.y + 5,
+              left: state.selectedCircle.x + 5,
+            }}
+          />
+        ) : null}
+      </div>
+
       <p>
         <a
           href="https://github.com/scwood/7GUIs/blob/main/src/6-circle-drawer/CircleDrawer.tsx"
