@@ -5,6 +5,7 @@ import { FlightBooker } from "./3-flight-booker/FlightBooker";
 import { Timer } from "./4-timer/Timer";
 import { CRUD } from "./5-CRUD/CRUD";
 import { CircleDrawer } from "./6-circle-drawer/CircleDrawer";
+import { Cells } from "./7-cells/Cells";
 
 export function App() {
   return (
@@ -28,6 +29,7 @@ export function App() {
       <Timer />
       <CRUD />
       <CircleDrawer />
+      <Cells />
     </div>
   );
 }
