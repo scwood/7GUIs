@@ -1,11 +1,4 @@
-import { tokenize } from "./tokenize";
-
 export function Cells() {
-  try {
-    console.log(tokenize("SUM(1, DIVIDE(10, A99.9))"));
-  } catch (error) {
-    console.error(error);
-  }
   return (
     <>
       <h2>7. Cells</h2>

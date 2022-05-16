@@ -1,4 +1,4 @@
-import { MouseEventHandler, useReducer } from "react";
+import { MouseEventHandler, useReducer, useState } from "react";
 
 import styles from "./CircleDrawer.module.css";
 import { ResizeModal } from "./ResizeModal";
@@ -14,22 +14,19 @@ interface Circle {
 
 interface CircleDrawerState {
   circles: Circle[];
-  selectedCircle: Circle | null;
   undoStates: Circle[][];
   redoStates: Circle[][];
 }
 
 const initialCircleDrawerState: CircleDrawerState = {
   circles: [],
-  selectedCircle: null,
   undoStates: [],
   redoStates: [],
 };
 
 type CircleDrawerActions =
   | { type: "addCircle"; circle: Circle }
-  | { type: "selectCircle"; circle: Circle | null }
-  | { type: "resizeCircle"; circle: Circle; diameter: number }
+  | { type: "resizeCircle"; circleId: number; diameter: number }
   | { type: "undo" }
   | { type: "redo" };
 
@@ -45,18 +42,13 @@ function reducer(
         redoStates: [],
         circles: [...state.circles, action.circle],
       };
-    case "selectCircle":
-      return {
-        ...state,
-        selectedCircle: action.circle,
-      };
     case "resizeCircle":
       return {
         ...state,
         undoStates: [...state.undoStates, state.circles],
         redoStates: [],
         circles: state.circles.map((circle) => {
-          return circle.id === action.circle.id
+          return circle.id === action.circleId
             ? { ...circle, diameter: action.diameter }
             : circle;
         }),
@@ -92,10 +84,13 @@ function reducer(
 
 export function CircleDrawer() {
   const [state, dispatch] = useReducer(reducer, initialCircleDrawerState);
+  const [selectedCircle, setSelectedCircle] = useState<Circle | null>(null);
+  const [tempDiameter, setTempDiameter] = useState(0);
 
   const handleDrawingAreaClick: MouseEventHandler<HTMLDivElement> = (event) => {
-    if (state.selectedCircle) {
-      dismissModal();
+    commitResize();
+    if (selectedCircle) {
+      setSelectedCircle(null);
       return;
     }
     const rect = event.currentTarget.getBoundingClientRect();
@@ -112,15 +107,14 @@ export function CircleDrawer() {
     (circle: Circle): MouseEventHandler<HTMLDivElement> =>
     (event) => {
       event.stopPropagation();
-      dispatch({
-        type: "selectCircle",
-        circle: state.selectedCircle?.id === circle.id ? null : circle,
-      });
+      commitResize();
+      if (selectedCircle?.id === circle.id) {
+        setSelectedCircle(null);
+      } else {
+        setSelectedCircle(circle);
+        setTempDiameter(circle.diameter);
+      }
     };
-
-  function dismissModal() {
-    dispatch({ type: "selectCircle", circle: null });
-  }
 
   function undo() {
     dispatch({ type: "undo" });
@@ -130,12 +124,12 @@ export function CircleDrawer() {
     dispatch({ type: "redo" });
   }
 
-  function handleResize(diameter: number) {
-    if (state.selectedCircle) {
+  function commitResize() {
+    if (selectedCircle && tempDiameter !== selectedCircle.diameter) {
       dispatch({
         type: "resizeCircle",
-        diameter,
-        circle: state.selectedCircle,
+        circleId: selectedCircle.id,
+        diameter: tempDiameter,
       });
     }
   }
@@ -154,13 +148,15 @@ export function CircleDrawer() {
       <div className={styles.container} onClick={handleDrawingAreaClick}>
         <div className={styles.circles}>
           {state.circles.map((circle, i) => {
+            const diameter =
+              circle.id === selectedCircle?.id ? tempDiameter : circle.diameter;
             return (
               <div
                 key={i}
                 className={styles.circle}
                 style={{
-                  width: circle.diameter,
-                  height: circle.diameter,
+                  width: diameter,
+                  height: diameter,
                   left: circle.x,
                   top: circle.y,
                 }}
@@ -169,15 +165,15 @@ export function CircleDrawer() {
             );
           })}
         </div>
-        {state.selectedCircle ? (
+        {selectedCircle ? (
           <ResizeModal
-            currentDiameter={state.selectedCircle.diameter}
-            onChangeDiameter={handleResize}
+            currentDiameter={tempDiameter}
+            onChangeDiameter={setTempDiameter}
             style={{
               position: "absolute",
               overflow: "overlay",
-              top: state.selectedCircle.y + 5,
-              left: state.selectedCircle.x + 5,
+              top: selectedCircle.y + 5,
+              left: selectedCircle.x + 5,
             }}
           />
         ) : null}
